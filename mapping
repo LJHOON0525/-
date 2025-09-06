@@ -1,0 +1,51 @@
+import math
+
+# 시작점
+lat_start = 36.6209994
+lon_start = 127.2884360
+
+lat_step = 10 / 111000  # 위도 10m
+lon_step = 10 / (88000 * math.cos(math.radians(lat_start)))  # 경도 10m 보정
+
+# 격자 개수
+num_rows = int(100 / 10)  # 행 
+num_cols = int(60 / 10)   # 열
+
+# 고도 
+altitude = 10  # 미터
+
+# KML header
+kml_header = """<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+    <name>10m Grid Points</name>
+"""
+
+# KML 점들 body
+placemarks = ""
+for i in range(num_rows):
+    for j in range(num_cols):
+        lat = lat_start - i * lat_step
+        lon = lon_start + j * lon_step
+        placemarks += f"""
+    <Placemark>
+        <name>S{i}{j}</name>
+        <Point>
+            <coordinates>{lon},{lat},{altitude}</coordinates>
+        </Point>
+    </Placemark>"""
+
+# KML foot
+kml_footer = """
+</Document>
+</kml>"""
+
+# 전체 KML
+full_kml = kml_header + placemarks + kml_footer
+
+# 파일로 저장 (중복 저장됨)
+output_path = "/home/ljh/Downloads/10mmaping.kml"
+with open(output_path, "w", encoding="utf-8") as f:
+    f.write(full_kml)
+
+print(f"KML file saved as {output_path}")
